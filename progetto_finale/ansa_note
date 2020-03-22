@@ -1,0 +1,32 @@
+App di notizie
+    Fonte: Ansa.it - servizio offerto da NewsApi
+
+Schermata di home:
+    - Titolo rappresentato come logo di ansa.it
+
+    - Header
+        - Sinistra: Titolo e sottotitolo schermata attuale
+        - Destra: meteo con giorno e mese
+
+    - Click su notizia:
+        - Navigazione su pagina di dettaglio di notizia
+            - Titolo
+            - immagine (full screen)
+            - contenuto
+            - Bottone per andare sul sito ufficiale della notizia
+            - Bottone per tornare indietro nella schermata di home
+    
+    - Tab Bar:
+        - 2 pagine (trending, passate)
+        - fab centrale con bordo bianco
+            - icona di refresh
+            - click per refreshare i dati
+
+    Schermata trending:
+        - 10 notizie
+        - 1 notizia: Headline
+        - 9 notizie: normali (immagine a destra)
+
+    Schermata passate:
+        - 10 notizie
+        - divisione in griglia con 2 colonne
