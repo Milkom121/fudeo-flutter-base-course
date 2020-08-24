@@ -52,16 +52,38 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final TextEditingController _noteController = TextEditingController();
   int _selectedMonthIndex = 0;
+  bool isBottomSheetOpen = false;
 
   void onNoteSubmit(Day day) {
     setState(() {
       day.task = _noteController.text.trim();
-      _noteController.clear();
+
+      // Impostiamo il BottomSheet come chiuso
+      isBottomSheetOpen = false;
+    });
+    _noteController.clear();
+    Navigator.of(context).pop();
+  }
+
+  void onSelectedMonthChange(int newMonthIndex) {
+    setState(() {
+      _selectedMonthIndex = newMonthIndex;
     });
     Navigator.of(context).pop();
   }
 
+  void onDrawerOpen() {
+    if (isBottomSheetOpen) {
+      Navigator.of(context).pop();
+    }
+  }
+
   void createTask(BuildContext context, Day day) {
+    // Impostiamo il BottomSheet come aperto
+    setState(() {
+      isBottomSheetOpen = true;
+    });
+
     showBottomSheet(
         context: context,
         builder: (_) {
@@ -111,7 +133,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Calendario"),
+          title: Text(months[_selectedMonthIndex].name),
           centerTitle: true,
         ),
         body: ListView.builder(
@@ -126,27 +148,61 @@ class _HomePageState extends State<HomePage> {
                 subtitle: Text(months[_selectedMonthIndex].days[index].task ?? "No task"),
               ));
             }),
-        drawer: Container(
-            width: 300,
-            color: Colors.white,
-            child: ListView.separated(
-              itemCount: months.length,
-              itemBuilder: (context, index) {
-                return InkWell(
-                    onTap: () {
-                      setState(() {
-                        _selectedMonthIndex = index;
-                      });
-                      Navigator.of(context).pop();
-                    },
-                    child: Container(padding: EdgeInsets.all(20), child: Text(months[index].name)));
-              },
-              separatorBuilder: (context, index) {
-                return Container(
-                  height: 1,
-                  color: Colors.grey.shade200,
-                );
-              },
-            )));
+        drawer: Drawer(
+          onSelectedMonthChange: onSelectedMonthChange,
+          onOpen: onDrawerOpen,
+        ));
+  }
+}
+
+class Drawer extends StatefulWidget {
+  Drawer({
+    @required this.onSelectedMonthChange,
+    this.onOpen,
+    this.onClose,
+  });
+
+  final Function(int) onSelectedMonthChange;
+  final Function onOpen;
+  final Function onClose;
+
+  @override
+  _DrawerState createState() => _DrawerState();
+}
+
+class _DrawerState extends State<Drawer> {
+  @override
+  void initState() {
+    // Abbreviazione per chiamare onOpen solamente quando non è null
+    widget.onOpen?.call();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    // Abbreviazione per chiamare onClose solamente quando non è null
+    widget.onClose?.call();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: 300,
+        color: Colors.white,
+        child: ListView.separated(
+          itemCount: months.length,
+          itemBuilder: (context, index) {
+            return InkWell(
+                onTap: () => widget.onSelectedMonthChange(index),
+                child: Container(padding: EdgeInsets.all(20), child: Text(months[index].name)));
+          },
+          separatorBuilder: (context, index) {
+            return Container(
+              height: 1,
+              color: Colors.grey.shade200,
+            );
+          },
+        ));
   }
 }
